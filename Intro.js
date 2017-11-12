@@ -2,12 +2,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Swiper from 'react-native-swiper';
-
-function MeProfileLabel() {
-  return (
-    <Text style={{fontWeight: 'bold'}}>MeProfile</Text>    
-  );
-}
+import LoginScreen from './LoginScreen.js';
+import { MeProfileLabel } from './Shared.js';
 
 export default class Intro extends Component {
   render() {
@@ -26,9 +22,7 @@ export default class Intro extends Component {
 	    After a few samples, it tells you how you spend your time.
 	  </Text>
 	</View>
-	<View style={styles.slide}>
-	  <Text style={styles.slideText}>Stay tuned...</Text>
-	</View>
+	<LoginScreen />
       </Swiper>
     );
   }
