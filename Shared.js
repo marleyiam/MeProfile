@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
+import * as firebase from 'firebase';
 
 export function MeProfileLabel() {
   return (
@@ -21,3 +22,13 @@ export function Hr() {
       }}/>	  
   );
 }
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDtQoBsQRPK_8b4cBDLHDyJcTrH85RqZJw",
+  authDomain: "meprofile-b5785.firebaseapp.com",
+  databaseURL: "https://meprofile-b5785.firebaseio.com",
+  projectId: "meprofile-b5785",
+  storageBucket: "meprofile-b5785.appspot.com",
+  messagingSenderId: "133459696829"
+};
+export const firebaseApp = firebase.initializeApp(firebaseConfig);
