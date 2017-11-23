@@ -1,18 +1,44 @@
 
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigatorIOS, StyleSheet, Text, View } from 'react-native';
 import Swiper from 'react-native-swiper';
 import LoginScreen from './LoginScreen.js';
 import { MeProfileLabel } from './Shared.js';
+import MainFlow from './MainFlow.js';
 
 export default class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return(
+      <NavigatorIOS
+        initialRoute={{
+          component: IntroFlow,
+	  navigationBarHidden: true,
+	  title: 'Intro',
+	  passProps: {onLogin: this.props.onLogin}
+        }}
+        style={{flex: 1}}
+	/>
+    );
+  }
+}
+
+class IntroFlow extends Component {
   constructor(props) {
     super(props);
     this.onLogin = this.onLogin.bind(this);
   }
 
   onLogin(user) {
-    console.warn('successful login');
+    this.props.navigator.push({
+      component: MainFlow,
+      navigationBarHidden: true,
+      title: 'MainFlow',
+      passProps: {user}
+    });
   }
   
   render() {
@@ -34,7 +60,7 @@ export default class App extends Component {
 	<LoginScreen onLogin={this.onLogin} />
       </Swiper>
     );
-  }
+  }  
 }
 
 var styles = StyleSheet.create({
