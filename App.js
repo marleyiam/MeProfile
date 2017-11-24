@@ -16,9 +16,9 @@ export default class App extends Component {
       <NavigatorIOS
         initialRoute={{
           component: NavigatorManager,
-	  navigationBarHidden: true,
 	  title: 'Loading',
         }}
+	navigationBarHidden={true}
         style={{flex: 1}}
 	/>
     );
@@ -37,7 +37,6 @@ class NavigatorManager extends Component {
 	// User is signed in.
 	const route = {
 	  component: MainFlow,
-	  navigationBarHidden: true,
 	  title: 'MainFlow',
 	};
 	if(this.initializing) {
@@ -49,7 +48,6 @@ class NavigatorManager extends Component {
 	// No user is signed in.
 	this.props.navigator.resetTo({
 	  component: IntroFlow,
-	  navigationBarHidden: true,
 	  title: 'Intro',
 	});
       }
@@ -61,7 +59,7 @@ class NavigatorManager extends Component {
     return (
       <View style={styles.slide}>
 	<Text style={styles.slideText2}>Loading...</Text>
-	</View>
+      </View>
     );
   }
 }

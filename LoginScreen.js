@@ -4,11 +4,6 @@ import { NavigatorIOS, StyleSheet, Text, TextInput, View, Button } from 'react-n
 import { firebaseApp, MeProfileLabel, Hr } from './Shared.js';
 
 export default class LoginScreen extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null };
-  }
-  
   render() {
     return(
       <NavigatorIOS
@@ -31,14 +26,24 @@ class Login extends Component {
     this.onForgot = this.onForgot.bind(this);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      error: null
     };
+  }
+
+  resetState() {
+    this.setState({
+      email: '',
+      password: '',
+      error: null,
+    });
   }
 
   onSignin() {
     firebaseApp.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
       // No need to do anything, the app will listen to firebase
       // observable to determine the current user
+      this.resetState();
     }).catch((err)=>{
       this.setState({error: err.message});
     });
@@ -46,18 +51,14 @@ class Login extends Component {
 
   onSignup() {
     firebaseApp.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
-      this.setState({error: ''});
-      this.props.navigator.push({
-        component: GoodSignup,
-        navigationBarHidden: true,
-        title: 'Good Signup',
-      });
+      this.resetState();
     }).catch((err)=>{
       this.setState({error: err.message});
     });
   }
 
   onForgot() {
+    this.resetState();
     this.props.navigator.push({
       component: Forgot,
       navigationBarHidden: true,
@@ -73,13 +74,17 @@ class Login extends Component {
           style={styles.slideInput}
           placeholder={"E-mail"}
 	  autoCapitalize={'none'}
-	  onChangeText={(txt)=>this.setState({email: txt})}/>
+	  autoCorrect={false}
+	  onChangeText={(txt)=>this.setState({email: txt})}
+	  value={this.state.email}/>
 	<TextInput
           style={styles.slideInput}
           placeholder={"Password"}
 	  autoCapitalize={'none'}
+	  autoCorrect={false}
 	  secureTextEntry={true}
-	  onChangeText={(txt)=>this.setState({password: txt})}/>
+	  onChangeText={(txt)=>this.setState({password: txt})}
+	  value={this.state.password}/>
 	<Text style={{marginLeft: 50, marginRight: 50, marginTop: 20, color: 'red'}}>{this.state.error}</Text>
 	<View style={{marginTop: 15, marginLeft: 105, marginRight: 105, backgroundColor: 'lightgrey'}}>
 	  <Button
@@ -153,31 +158,6 @@ class Forgot extends Component {
     );
   }
 };
-
-class GoodSignup extends Component {
-  constructor(props) {
-    super(props);
-    this.onNext = this.onNext.bind(this);
-  }
-
-  onNext() {
-    this.props.navigator.pop();
-  }
-  
-  render() {
-    return (
-      <View style={styles.slide}>
-	<Text style={{marginBottom: 20, textAlign: 'center'}}>Thanks for signing up!</Text>
-	<View style={{marginLeft: 105, marginRight: 105, backgroundColor: 'lightgrey'}}>
-	  <Button
-	    title="Next"
-	    color="blue"
-	    onPress={this.onNext}/>
-	</View>
-      </View>
-    );
-  }
-}
 
 class GoodReset extends Component {
   constructor(props) {
