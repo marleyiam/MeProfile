@@ -11,7 +11,8 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
-  TextInput
+  TextInput,
+  Button
 } from 'react-native';
 var { width, height } = Dimensions.get('window');
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -109,7 +110,7 @@ export default class CustomMultiPicker extends Component {
           </View>
           <TextInput
             style={{
-              width: this.state.pageWidth-20,
+              width: this.state.pageWidth-75,
               height: 35,
               margin: 0,
               marginTop: 10,
@@ -125,7 +126,13 @@ export default class CustomMultiPicker extends Component {
             placeholder={this.props.placeholder}
             placeholderTextColor={this.props.placeholderTextColor}
             underlineColorAndroid={'transparent'}
-          />
+              />
+	      <View style={{ backgroundColor: 'lightgrey', width: 55, marginLeft: 5, height: 35, marginTop: 10, justifyContent: 'center' }}>
+		  <Button
+		      title="Add"
+		      color="blue"
+		      onPress={null}/>
+	  </View>
         </View>}
         <ScrollView
           style={{ padding: 5, height: this.props.scrollViewHeight }}

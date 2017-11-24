@@ -32,24 +32,22 @@ class NavigatorManager extends Component {
   }
   
   componentDidMount() {
-    let navigatorAction = this.props.navigator.resetTo;
     firebaseApp.auth().onAuthStateChanged((user) => {
       if (user) {
 	// User is signed in.
-	if(!this.initializing) {
-	  navigatorAction = this.props.navigator.push;
-	}
-	navigatorAction({
+	const route = {
 	  component: MainFlow,
 	  navigationBarHidden: true,
 	  title: 'MainFlow',
-	});
+	};
+	if(this.initializing) {
+	  this.props.navigator.resetTo(route);
+	} else {
+	  this.props.navigator.push(route);
+	}
       } else {
 	// No user is signed in.
-	if(!this.initializing) {
-	  navigatorAction = this.props.navigator.popToTop;
-	}
-	navigatorAction({
+	this.props.navigator.resetTo({
 	  component: IntroFlow,
 	  navigationBarHidden: true,
 	  title: 'Intro',
