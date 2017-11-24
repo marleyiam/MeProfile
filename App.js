@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { NavigatorIOS, StyleSheet, Text, View } from 'react-native';
 import Swiper from 'react-native-swiper';
 import LoginScreen from './LoginScreen.js';
-import { MeProfileLabel } from './Shared.js';
+import { MeProfileLabel, firebaseApp } from './Shared.js';
 import MainFlow from './MainFlow.js';
 
 export default class App extends Component {
@@ -15,10 +15,9 @@ export default class App extends Component {
     return(
       <NavigatorIOS
         initialRoute={{
-          component: IntroFlow,
+          component: NavigatorManager,
 	  navigationBarHidden: true,
-	  title: 'Intro',
-	  passProps: {onLogin: this.props.onLogin}
+	  title: 'Loading',
         }}
         style={{flex: 1}}
 	/>
@@ -26,39 +25,72 @@ export default class App extends Component {
   }
 }
 
+class NavigatorManager extends Component {
+  constructor(props) {
+    super(props);
+    this.initializing = true;
+  }
+  
+  componentDidMount() {
+    let navigatorAction = this.props.navigator.resetTo;
+    firebaseApp.auth().onAuthStateChanged((user) => {
+      if (user) {
+	// User is signed in.
+	if(!this.initializing) {
+	  navigatorAction = this.props.navigator.push;
+	}
+	navigatorAction({
+	  component: MainFlow,
+	  navigationBarHidden: true,
+	  title: 'MainFlow',
+	});
+      } else {
+	// No user is signed in.
+	if(!this.initializing) {
+	  navigatorAction = this.props.navigator.popToTop;
+	}
+	navigatorAction({
+	  component: IntroFlow,
+	  navigationBarHidden: true,
+	  title: 'Intro',
+	});
+      }
+      this.initializing = false;
+    });
+  }
+
+  render() {
+    return (
+      <View style={styles.slide}>
+	<Text style={styles.slideText2}>Loading...</Text>
+	</View>
+    );
+  }
+}
+
 class IntroFlow extends Component {
   constructor(props) {
     super(props);
-    this.onLogin = this.onLogin.bind(this);
   }
 
-  onLogin(user) {
-    this.props.navigator.push({
-      component: MainFlow,
-      navigationBarHidden: true,
-      title: 'MainFlow',
-      passProps: {user}
-    });
-  }
-  
   render() {
     return (
       <Swiper loop={false}>
 	<View style={styles.slide}>
 	  <Text style={styles.slideText}>Welcome to <MeProfileLabel />,</Text>
-	  <Text style={styles.slideText}>a statistical profiler for your life.</Text>
+	<Text style={styles.slideText}>a statistical profiler for your life.</Text>
 	</View>
 	<View style={styles.slide}>
-	  <Text style={styles.slideText}>
-	    <MeProfileLabel /> randomly asks you what you're doing.
-	  </Text>
-	  <View style={{paddingTop: 20}}/>
-	  <Text style={[styles.slideText, {fontStyle: 'italic'}]}>
-	    After a few samples, it tells you how you spend your time.
-	  </Text>
+	<Text style={styles.slideText}>
+	<MeProfileLabel /> randomly asks you what you're doing.
+	</Text>
+	<View style={{paddingTop: 20}}/>
+	<Text style={[styles.slideText, {fontStyle: 'italic'}]}>
+	After a few samples, it tells you how you spend your time.
+	</Text>
 	</View>
-	<LoginScreen onLogin={this.onLogin} />
-      </Swiper>
+	<LoginScreen />
+	</Swiper>
     );
   }  
 }
@@ -72,6 +104,11 @@ var styles = StyleSheet.create({
   slideText: {
     marginLeft: 50,
     marginRight: 50,
+    fontSize: 20,
+    lineHeight: 30,
+  },
+  slideText2: {
+    textAlign: 'center',
     fontSize: 20,
     lineHeight: 30,
   },

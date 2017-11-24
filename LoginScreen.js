@@ -16,7 +16,6 @@ export default class LoginScreen extends Component {
           component: Login,
 	  navigationBarHidden: true,
 	  title: 'Login',
-	  passProps: {onLogin: this.props.onLogin}
         }}
         style={{flex: 1}}
 	/>
@@ -38,7 +37,8 @@ class Login extends Component {
 
   onSignin() {
     firebaseApp.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
-      this.props.onLogin(user);
+      // No need to do anything, the app will listen to firebase
+      // observable to determine the current user
     }).catch((err)=>{
       this.setState({error: err.message});
     });
@@ -46,11 +46,11 @@ class Login extends Component {
 
   onSignup() {
     firebaseApp.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).then((user)=>{
+      this.setState({error: ''});
       this.props.navigator.push({
         component: GoodSignup,
         navigationBarHidden: true,
         title: 'Good Signup',
-	passProps: {user: user, onLogin: this.props.onLogin }
       });
     }).catch((err)=>{
       this.setState({error: err.message});
@@ -155,6 +155,15 @@ class Forgot extends Component {
 };
 
 class GoodSignup extends Component {
+  constructor(props) {
+    super(props);
+    this.onNext = this.onNext.bind(this);
+  }
+
+  onNext() {
+    this.props.navigator.pop();
+  }
+  
   render() {
     return (
       <View style={styles.slide}>
@@ -163,7 +172,7 @@ class GoodSignup extends Component {
 	  <Button
 	    title="Next"
 	    color="blue"
-	    onPress={()=>this.props.onLogin(this.props.user)}/>
+	    onPress={this.onNext}/>
 	</View>
       </View>
     );
