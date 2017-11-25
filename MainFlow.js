@@ -80,10 +80,15 @@ class SurveyScreen extends Component {
   constructor(props) {
     super(props);
     this.onTagAdded = this.onTagAdded.bind(this);
+    this.onTagsSelected = this.onTagsSelected.bind(this);
   }
 
   onTagAdded(tag) {
-    
+    console.warn('Added', tag);
+  }
+
+  onTagsSelected(tags) {
+    console.warn('Selected', tags);
   }
   
   render() {
@@ -92,11 +97,11 @@ class SurveyScreen extends Component {
 	<CustomMultiPicker
 	  options={userList}
 	  search={true}
-	  multiple={true} //
+	  multiple={true}
 	  placeholder={"Search"}
 	  placeholderTextColor={'#757575'}
 	  returnValue={"label"}
-	  callback={(res)=>{}}
+	  callback={this.onTagsSelected}
 	  tagAdded={this.onTagAdded}
 	  rowBackgroundColor={"#eee"}
 	  rowHeight={40}

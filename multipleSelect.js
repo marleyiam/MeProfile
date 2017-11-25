@@ -99,14 +99,16 @@ export default class CustomMultiPicker extends Component {
   }
 
   addOption = () => {
-    if(this.state.searchText) {
+    const option = this.state.searchText;
+    if(option) {
       let options = this.state.options;
-      options[this.state.searchText] = this.state.searchText;
+      options[option] = option;
       this.setState({
 	options: options,
 	searchText: null
       });
       this.props.tagAdded(this.state.searchText);
+      this._onSelect(option);
     }
   }
 

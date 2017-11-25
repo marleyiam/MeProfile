@@ -46,10 +46,14 @@ class NavigatorManager extends Component {
 	}
       } else {
 	// No user is signed in.
-	this.props.navigator.resetTo({
-	  component: IntroFlow,
-	  title: 'Intro',
-	});
+	if(this.initializing) {
+	  this.props.navigator.resetTo({
+	    component: IntroFlow,
+	    title: 'Intro',
+	  });
+	} else {
+	  this.props.navigator.popToTop();
+	}
       }
       this.initializing = false;
     });
