@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { NavigatorIOS, StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { AlertIOS, NavigatorIOS, StyleSheet, Text, TextInput, View, Button } from 'react-native';
 import { MeProfileLabel, firebaseApp, save, getTags } from './Shared.js';
 import CustomMultiPicker from "./multipleSelect.js";
 import _ from 'lodash';
@@ -103,11 +103,9 @@ class SurveyScreen extends Component {
 
   componentWillMount() {
     getTags().then((doc)=>{
-      if(doc.exists) {
-	const tags = doc.data()['tags'];
-	this.setState({tags});
-	this.tags = tags.slice();
-      }
+      const tags = doc.exists ? doc.data()['tags'] : [];
+      this.setState({tags});
+      this.tags = tags.slice();
     });
   }
 
@@ -129,8 +127,14 @@ class SurveyScreen extends Component {
 
   onSubmit() {
     save(_.uniq(this.tags), this.selectedTags).then(() => {
-      console.warn("saved");
-    });;
+      AlertIOS.alert('Success', 'Data synced', ()=>{
+	this.props.navigator.pop();
+      });
+    }).catch((err)=>{
+      AlertIOS.alert('Error', 'Failed to sync data', ()=>{
+	this.props.navigator.pop();
+      });
+    });
   }
   
   render() {
