@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react';
 import { NavigatorIOS, StyleSheet, Text, TextInput, View, Button } from 'react-native';
-import { MeProfileLabel, firebaseApp } from './Shared.js';
+import { MeProfileLabel, firebaseApp, save, getTags } from './Shared.js';
 import CustomMultiPicker from "./multipleSelect.js";
+import _ from 'lodash';
 
 export default class MainFlow extends Component {
   constructor(props) {
@@ -44,6 +45,17 @@ class ReadyToSampleScreen extends Component {
   constructor(props) {
     super(props);
     this.startSurvey = this.startSurvey.bind(this);
+    this.setOnSubmit = this.setOnSubmit.bind(this);
+    this.callOnSubmit = this.callOnSubmit.bind(this);
+    this.onSubmit = null;
+  }
+
+  setOnSubmit(onSubmit) {
+    this.onSubmit = onSubmit;
+  }
+
+  callOnSubmit() {
+    this.onSubmit();
   }
   
   startSurvey() {
@@ -51,7 +63,8 @@ class ReadyToSampleScreen extends Component {
       component: SurveyScreen,
       title: 'Survey',
       rightButtonTitle: 'Submit',
-      onRightButtonPress: (_) => {},
+      onRightButtonPress: this.callOnSubmit,
+      passProps: { setOnSubmit: this.setOnSubmit }
     });
   }
   
@@ -70,32 +83,64 @@ class ReadyToSampleScreen extends Component {
   }
 }
 
-const userList = {
-  "1":"Tom",
-  "2":"Michael",
-  "4":"Christin",
-};
-
 class SurveyScreen extends Component {
   constructor(props) {
     super(props);
     this.onTagAdded = this.onTagAdded.bind(this);
     this.onTagsSelected = this.onTagsSelected.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.fromTags = this.fromTags.bind(this);
+
+    this.tags = [];
+    this.selectedTags = [];
+
+    this.props.setOnSubmit(this.onSubmit);
+
+    this.state = {
+      tags: null,
+    };
+  }
+
+  componentWillMount() {
+    getTags().then((doc)=>{
+      if(doc.exists) {
+	const tags = doc.data()['tags'];
+	this.setState({tags});
+	this.tags = tags.slice();
+      }
+    });
+  }
+
+  fromTags(tags) {
+    const x = tags.reduce((acc, tag)=>{
+      acc[tag] = tag;
+      return acc;
+    }, {});
+    return x;
   }
 
   onTagAdded(tag) {
-    console.warn('Added', tag);
+    this.tags.push(tag);
   }
 
   onTagsSelected(tags) {
-    console.warn('Selected', tags);
+    this.selectedTags = tags;
+  }
+
+  onSubmit() {
+    save(_.uniq(this.tags), this.selectedTags).then(() => {
+      console.warn("saved");
+    });;
   }
   
   render() {
+    if (this.state.tags == null) {
+      return (<View style={styles.slide}><Text style={styles.slideText}>Loading...</Text></View>);
+    }
     return (
       <View style={styles.slide2}>
 	<CustomMultiPicker
-	  options={userList}
+	  options={this.fromTags(this.state.tags)}
 	  search={true}
 	  multiple={true}
 	  placeholder={"Search"}
